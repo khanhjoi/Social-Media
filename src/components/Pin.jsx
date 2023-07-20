@@ -78,7 +78,7 @@ const Pin = ({ pin }) => {
         </div>
       )}
       </div>
-      <Link to={`user-profile/${123}`} className='flex gap-2 mt-2 items-center'>
+      <Link to={`/user-profile/${123}`} className='flex gap-2 mt-2 items-center'>
         <img
           className='w-8 h-8 rounded-full object-cover'
           src='https://i.pinimg.com/564x/67/4d/e6/674de60418e08b784d91036d1de3c809.jpg'
