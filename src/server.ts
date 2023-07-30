@@ -1,8 +1,8 @@
 import express, { Express, Request, Response } from 'express';
 import mongoose from 'mongoose';
-import bodyParser from 'body-parser';
 import { config } from './config/config';
 import routes from './routes/index';
+import cors from 'cors';
 
 const app: Express = express();
 
@@ -22,6 +22,11 @@ const StartServer = () => {
   
   //express understand -> body request 
   app.use(express.json());
+  app.use(cors({
+    origin: ['http://localhost:3000'],
+    methods: "GET,POST,PUT,DELETE,OPTIONS",
+  }));
+  
   
   // routes
   app.get('/', (req: Request, res: Response) => {

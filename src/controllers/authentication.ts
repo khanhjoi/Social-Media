@@ -1,11 +1,10 @@
 import express from 'express';
-import { getUserByEmail,createUser } from '../models/Users';
-import { authentication, random } from '../helpers';
+import { getUserByEmail, createUser } from '../models/Users';
+import { authentication, random, verifyGoogleToken } from '../helpers';
 
 export const login =async (req: express.Request, res: express.Response) => {
   try {
     const {email, password} = req.body;
-
     if(!email || !password) {
      return res.status(400).json({message: "Lack of information!"});
     }
@@ -31,13 +30,43 @@ export const login =async (req: express.Request, res: express.Response) => {
       }
       
     } else {
-      return res.status(400).json({massage: "unregistered user, Please register!"});
+      return res.status(400).json({message: "unregistered user, Please register!"});
     }
     
     return res.status(200).json({user: user});
   } catch (error) {
     console.log(error);
     return res.sendStatus(400);
+  }
+}
+
+export const loginGoogle =async (req:express.Request, res: express.Response) => {
+  try {
+    if(req.body.credential) {
+      const verificationResponse = await verifyGoogleToken(req.body.credential);
+
+      if (verificationResponse.error) {
+        return res.status(400).json({
+          message: verificationResponse.error,
+        });
+      }
+
+      const profile = verificationResponse?.payload;
+
+      res.status(201).json({
+        message: "Signup was successful",
+        user: {
+          firstName: profile?.given_name,
+          lastName: profile?.family_name,
+          picture: profile?.picture,
+          email: profile?.email,
+        },
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: "An error occurred. Registration failed.",
+    });
   }
 }
 
