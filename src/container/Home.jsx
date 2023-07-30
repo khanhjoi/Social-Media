@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Link,  Routes, Route } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { HiMenu } from 'react-icons/hi';
 import { AiFillCloseCircle } from 'react-icons/ai';
@@ -15,10 +16,47 @@ const Home = () => {
   const [toggleSidebar, setToggleSideBar] = useState(false);
   const scrollRef = useRef(null);
 
-  const userInfo = localStorage.getItem('user') !== 'undefined' ? JSON.parse(localStorage.getItem('user')) : localStorage.clear();
+  const navigate = useNavigate();
 
   useEffect(() => {
-  },[]);
+    // check if user is logged in with Google
+    const googleUser = JSON.parse(localStorage.getItem('userGoogle'));
+    if (googleUser) {
+      // call backend to log in user with Google
+      fetch('http://localhost:7070/api/auth/loginGoogle', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ credential:  googleUser.credential })
+      })
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        if (data.user) {
+          localStorage.setItem('user', JSON.stringify(data.user));
+          setUser(data.user);
+        }else {
+          throw new Error('some Thing wrong')
+        }
+      })
+      .catch(error => {
+        console.log(error)
+      });
+    } else {
+      // check if user is logged in with backend
+      const backendUser = JSON.parse(localStorage.getItem('user'));
+      if (backendUser) {
+        setUser(backendUser);
+      }
+    }
+  }, []);
+
+  // if user not exit redirect to login
+  if(!user) {
+    navigate("/login");
+  }
 
   useEffect(()=> {
     scrollRef.current.scrollTo(0,0)

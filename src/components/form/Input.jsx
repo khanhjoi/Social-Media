@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const Input = ({ id, label}) => {
+const Input = ({ id, label, type}) => {
 
   const [Input, setInput] = useState('');
 
@@ -8,6 +8,7 @@ const Input = ({ id, label}) => {
     <div className='relative mb-6'>  
       <input 
         id={id}
+        type={type}
         name={id}
         value={Input}
         onChange={(e) => {setInput(e.target.value)}}
