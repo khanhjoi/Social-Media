@@ -43,6 +43,7 @@ export const login =async (req: express.Request, res: express.Response) => {
 export const loginGoogle =async (req:express.Request, res: express.Response) => {
   try {
     if(req.body.credential) {
+
       const verificationResponse = await verifyGoogleToken(req.body.credential);
 
       if (verificationResponse.error) {

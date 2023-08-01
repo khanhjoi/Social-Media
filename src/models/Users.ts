@@ -12,6 +12,9 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  Save: {
+    type: mongoose.Schema.Types.ObjectId
+  },
   authentication: {
     password: {type: String, required: true, select: false},
     salt: {type: String, select: false},
