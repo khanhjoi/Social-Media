@@ -89,13 +89,13 @@ const PinDetail = ({ user }) => {
           <h1 className='text-4xl font-bold break-words mt-3'>{pinDetail.title}</h1>
           <p className='mt-3'> {pinDetail.about}</p>
         </div>
-        <Link to={`user-profile/${123}`} className='flex gap-2 mt-2 items-center'>
+        <Link to={user?._id ? `user-profile/${user?.id}` : `user-profile/${user?.email}`} className='flex gap-2 mt-2 items-center'>
           <img
             className='w-8 h-8 rounded-full object-cover'
-            src='https://i.pinimg.com/564x/67/4d/e6/674de60418e08b784d91036d1de3c809.jpg'
+            src={user?.image ? user?.image : user?.picture}
             alt="user-profile"
           />
-          <p className='font-semibold capitalize'>Khanh</p>
+          <p className='font-semibold capitalize'>{user.username ? user.username : `${user.firstName} ${user.lastName}`}</p>
         </Link>
         <h2 className='mt-2 text-2xl'>Comments</h2>
         <div className='max-h-370 overflow-y-auto'>
@@ -114,10 +114,10 @@ const PinDetail = ({ user }) => {
           ))}
         </div>
         <div className='flex flex-wrap mt-6 gap-3'>
-          <Link to={`user-profile/${123}`} >
+          <Link to={user?._id ? `user-profile/${user?.id}` : `user-profile/${user?.email}`} >
             <img
               className='w-10 h-10 rounded-full cursor-pointer'
-              src='https://i.pinimg.com/564x/67/4d/e6/674de60418e08b784d91036d1de3c809.jpg'
+              src={user?.image ? user?.image : user?.picture}
               alt="user-profile"
             />
           </Link>

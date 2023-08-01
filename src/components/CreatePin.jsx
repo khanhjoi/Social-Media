@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -6,6 +6,7 @@ import { AiOutlineCloudUpload } from 'react-icons/ai'
 import { MdDelete } from 'react-icons/md';
 
 import Spinner from './Spinner';
+import UploadWidget from './hooks/UploadWidget';
 
 const categories = [
   { name: 'Animals' },
@@ -29,20 +30,44 @@ const CreatePin = ({ user }) => {
 
   const navigate = useNavigate();
 
-  const uploadImage = (e) => {
+  const uploadImage =  (e) => {
     const { type } = e.target.files[0];
-
-    if(type === 'image/png' || type === "image/svg" || type === 'image/jpeg' || type === "image/gif" || type === 'image/tiff') {
-      setWrongImageType(false);
-      setLoading(true);
-      setImageAsset('https://i.pinimg.com/564x/7d/c9/db/7dc9db9a0f11c20bbfa7752454a97c32.jpg');
+    const file = e.target.files[0];
+    if(type === 'image/png' || type === "image/svg" || type === 'image/jpeg' || type === "image/gif" || type === 'image/tiff') {   
       // uploadFile
-      setTimeout(() => {
-        setLoading(false);
-      },1000)
+      setLoading(true);
+
+      // file reader -> to base64 string
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = async () => {
+        // call api to upload
+        try {
+          const response = await fetch('http://localhost:7070/api/upload-image', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ image: reader.result }),
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            setImageAsset(data);
+            setLoading(false);
+          } else {
+            console.log('Upload failed.');
+          }
+
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
     } else {
       setWrongImageType(true);
     }
+
   }
 
   const savePin = () => {
@@ -52,6 +77,7 @@ const CreatePin = ({ user }) => {
       alert('error fields')
     }
   }
+  
 
   return (
     <div className='flex flex-col justify-center items-center mt-5 lg:h-4/5'>
@@ -81,15 +107,13 @@ const CreatePin = ({ user }) => {
                 <input
                   type="file"
                   name="upload-image"
-                  onChange={uploadImage}
                   className='w-0 h-0'
-                >
-
-                </input>
+                  onChange={uploadImage}
+                />
               </label>
             ): (
               <div className='relative h-full'>
-                <img src={`${imageAsset}`} alt="upload-pic" className='h-full w-full'/>
+                <img src={`${imageAsset?.url}`} alt="upload-pic" className='h-full w-full'/>
                 <button
                   type='button'
                   className='absolute bottom-3 right-3 p-3 rounded-full bg-white text-xl cursor-pointer outline-noe hover:shadow-md transition-all duration-500 ease-in-out'
@@ -143,8 +167,8 @@ const CreatePin = ({ user }) => {
                 >
                   <option value="other" className='bg-white'>select Category</option>
 
-                  {categories.map((category) => (
-                    <option className='text-base border-0 outline-none capitalize bg-white text-black' value={category.name}>
+                  {categories.map((category, i) => (
+                    <option key={i} className='text-base border-0 outline-none capitalize bg-white text-black' value={category.name}>
                       {category.name}
                     </option>
                   ))}
