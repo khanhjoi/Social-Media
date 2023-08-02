@@ -6,7 +6,6 @@ import { AiOutlineCloudUpload } from 'react-icons/ai'
 import { MdDelete } from 'react-icons/md';
 
 import Spinner from './Spinner';
-import UploadWidget from './hooks/UploadWidget';
 
 const categories = [
   { name: 'Animals' },
@@ -70,6 +69,27 @@ const CreatePin = ({ user }) => {
 
   }
 
+  const removeImage = (e) => {
+    console.log(imageAsset);
+    fetch('http://localhost:7070/api/upload-image', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ public_id: imageAsset.public_id})
+    }).then(res => {
+      return res.json();
+    }).then(data => {
+      if(data.result) {
+        setImageAsset(null);
+      }else {
+        throw new Error (data);
+      }
+    }).catch(err => {
+      console.log(err);
+    })
+  }
+
   const savePin = () => {
     if(title && about && destination && imageAsset && category) {
       alert('ok')
@@ -117,7 +137,7 @@ const CreatePin = ({ user }) => {
                 <button
                   type='button'
                   className='absolute bottom-3 right-3 p-3 rounded-full bg-white text-xl cursor-pointer outline-noe hover:shadow-md transition-all duration-500 ease-in-out'
-                  onClick={()=> {setImageAsset(null)}}
+                  onClick={removeImage}
                 >
                   <MdDelete/>
                 </button>
