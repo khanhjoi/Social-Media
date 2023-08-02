@@ -15,6 +15,9 @@ const PinSchema = new mongoose.Schema({
   },
   image: {
     type: String,
+    asset_id: {
+      type: String,
+    }
   },
   userId: {
     type: mongoose.Schema.Types.ObjectId

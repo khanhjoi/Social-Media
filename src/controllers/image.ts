@@ -2,7 +2,7 @@ import express from 'express';
 
 import cloudinary from '../helpers/upload';
 
-export const upload =async (req:express.Request, res:express.Response) => {
+export const upload = async (req:express.Request, res:express.Response) => {
   try {
     const { image } = req.body;
     const uploadResponse = await cloudinary.uploader.upload(image,{
@@ -11,7 +11,7 @@ export const upload =async (req:express.Request, res:express.Response) => {
     
     if(uploadResponse) {
       return res.status(200).json({ 
-        asset_id: uploadResponse.asset_id,
+        public_id: uploadResponse.public_id,
         url: uploadResponse.url
       })
     }else {
@@ -22,3 +22,19 @@ export const upload =async (req:express.Request, res:express.Response) => {
    return res.status(400).json(error);
   }
 };
+
+export const remove = async (req:express.Request, res:express.Response) => {
+  try {
+    const { public_id } = req.body;
+    
+    const removeResponse = await cloudinary.uploader.destroy(public_id);
+    
+    if(removeResponse) {
+      return res.status(200).json(removeResponse);
+    }
+
+    return res.status(400).json({message: "Some thing wrong!"});
+  } catch (error) {
+    return res.status(400).json(error);
+  }
+}
