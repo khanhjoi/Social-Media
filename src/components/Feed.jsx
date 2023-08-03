@@ -14,26 +14,36 @@ const Feed = () => {
     setLoading(true);
 
     if(categoryId) {  
-      setTimeout(()=> {
+      console.log(categoryId)
+      fetch("http://localhost:7070/api/pins" , {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({categoryId})
+      }).then(res => {
+        return res.json();
+      }).then(data => {
+        if(data) {
+          setPins(data);
+        }
         setLoading(false);
-
-        // fake database
-        setPins([
-          {id: 1, pin: {postBy: "khanh", destination: "https://i.pinimg.com/564x/35/0e/c2/350ec2d3cf699f1115d998925ba14c89.jpg", src: "https://i.pinimg.com/564x/35/0e/c2/350ec2d3cf699f1115d998925ba14c89.jpg"}},
-          {id: 2, pin: {postBy: "khanh2", destination: "https://i.pinimg.com/564x/7d/c9/db/7dc9db9a0f11c20bbfa7752454a97c32.jpg", src: "https://i.pinimg.com/564x/7d/c9/db/7dc9db9a0f11c20bbfa7752454a97c32.jpg"}},
-          {id: 3, pin: {postBy: "khanh3", destination: "https://i.pinimg.com/564x/35/78/70/35787019bf53be64436256c8c37b874b.jpg", src: "https://i.pinimg.com/564x/35/78/70/35787019bf53be64436256c8c37b874b.jpg"}},
-        ])
-      },2000)
+      })
     } else {
-      // fake database
-      setPins([
-        {id: 1, pin: {postBy: "khanh", destination: "https://i.pinimg.com/564x/35/0e/c2/350ec2d3cf699f1115d998925ba14c89.jpg", src: "https://i.pinimg.com/564x/35/0e/c2/350ec2d3cf699f1115d998925ba14c89.jpg"}},
-        {id: 2, pin: {postBy: "khanh2", destination: "https://i.pinimg.com/564x/7d/c9/db/7dc9db9a0f11c20bbfa7752454a97c32.jpg", src: "https://i.pinimg.com/564x/7d/c9/db/7dc9db9a0f11c20bbfa7752454a97c32.jpg"}},
-        {id: 3, pin: {postBy: "khanh3", destination: "https://i.pinimg.com/564x/35/78/70/35787019bf53be64436256c8c37b874b.jpg", src: "https://i.pinimg.com/564x/35/78/70/35787019bf53be64436256c8c37b874b.jpg"}},
-      ])
-      setLoading(false);
-    }
-    return () => { 
+
+      fetch("http://localhost:7070/api/pins" , {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }).then(res => {
+        return res.json();
+      }).then(data => {
+        if(data) {
+          setPins(data);
+        }
+        setLoading(false);
+      })
     }
   }, [categoryId])
   

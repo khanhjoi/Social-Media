@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 import { AiOutlineCloudUpload } from 'react-icons/ai'
 import { MdDelete } from 'react-icons/md';
@@ -62,7 +63,6 @@ const CreatePin = ({ user }) => {
           console.log(error);
         }
       }
-
     } else {
       setWrongImageType(true);
     }
@@ -91,10 +91,22 @@ const CreatePin = ({ user }) => {
   }
 
   const savePin = () => {
-    if(title && about && destination && imageAsset && category) {
-      alert('ok')
+    if(title &&  imageAsset && category) {
+      fetch("http://localhost:7070/api/createPin" , {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title, about, destination, category, imageAsset, userId: user?._id || user.email, postedBy: user?._id || user?.email})
+    }).then(res => {
+      return res.json();
+    }).then(data => {
+      if(data) {
+        return navigate("/");
+      }
+    })
     } else {
-      alert('error fields')
+      toast.error('Lack information')
     }
   }
   
@@ -153,15 +165,15 @@ const CreatePin = ({ user }) => {
               placeholder='Add your title here'
               className='outline-none text-2xl sm:text-3xl font-bold border-b-2 border-gray-200 p-2'
             />
-            {!user && (
+            {user && (
               <div className='flex gap-2 my-2 items-center bg-white rounded-md'>
                 <img 
-                  src="https://i.pinimg.com/564x/67/4d/e6/674de60418e08b784d91036d1de3c809.jpg"
+                  src={ user?.image ? user?.image : user?.picture}
                   alt="user-profile"
                   className='w-10 h-10 rounded-full'
                 />
                 {/* <p> user name</p> */}
-                <p className='font-bold'>Khanh</p>
+                <p className='font-bold'>{user.username ? user.username : `${user.firstName} ${user.lastName}`}</p>
               </div>
             )}
             <input 

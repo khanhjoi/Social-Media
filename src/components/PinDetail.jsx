@@ -89,13 +89,13 @@ const PinDetail = ({ user }) => {
           <h1 className='text-4xl font-bold break-words mt-3'>{pinDetail.title}</h1>
           <p className='mt-3'> {pinDetail.about}</p>
         </div>
-        <Link to={user?._id ? `user-profile/${user?.id}` : `user-profile/${user?.email}`} className='flex gap-2 mt-2 items-center'>
+        <Link to={user?._id ? `/user-profile/${user?._id}` : `/user-profile/${user?.email}`} className='flex gap-2 mt-2 items-center'>
           <img
             className='w-8 h-8 rounded-full object-cover'
             src={user?.image ? user?.image : user?.picture}
             alt="user-profile"
           />
-          <p className='font-semibold capitalize'>{user.username ? user.username : `${user.firstName} ${user.lastName}`}</p>
+          <p className='font-semibold capitalize cursor-pointer'>{user.username ? user.username : `${user.firstName} ${user.lastName}`}</p>
         </Link>
         <h2 className='mt-2 text-2xl'>Comments</h2>
         <div className='max-h-370 overflow-y-auto'>
