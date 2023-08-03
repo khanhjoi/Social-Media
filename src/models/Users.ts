@@ -44,12 +44,12 @@ export const getUserBySessionToken = (sessionToken: string) => {
 }
 
 export const createUser = (values: Record<string, any>) => {
-  new UserModel(values).save()
+  return new UserModel(values).save()
     .then((user) => {
       user.toObject();
     })
 }
 
 export const updateUser = (id: string, values: Record<string, any>) => {
-  UserModel.findByIdAndUpdate(id, values);
+  return UserModel.findByIdAndUpdate(id, values);
 }

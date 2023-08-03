@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+import { CommentSchema } from "./Comments";
+
 const PinSchema = new mongoose.Schema({
   title: {
     type: String
@@ -14,37 +16,38 @@ const PinSchema = new mongoose.Schema({
     type: String,
   },
   image: {
-    type: String,
-    asset_id: {
-      type: String,
-    }
+    public_id: String,
+    url: String
   },
   userId: {
-    type: mongoose.Schema.Types.ObjectId
+    type: String
   },
   postedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+    type: String,
   },
   save: [{
     type: mongoose.Schema.Types.ObjectId,
   }],
-  comments: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Comment'
-  }]
+  comments: [CommentSchema]
 });
 
 export const PinModel = mongoose.model('Pin', PinSchema);
 
 // all method contact to database
 
-export const getPins = () => {
+export const getPins = (categoryId: String) => {
+  if(categoryId) {
+    return PinModel.find({category: categoryId});
+  }
   return PinModel.find();
 }
 
 export const getPinById = (id: mongoose.Types.ObjectId) => {
   return PinModel.findById(id);
+}
+
+export const createPinModel = (values: Record<string, any>) => {
+   return PinModel.create(values);
 }
 
 export const updatePin = (id: mongoose.Types.ObjectId, values: Record <string,any>) => {
