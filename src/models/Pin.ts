@@ -22,6 +22,7 @@ const PinSchema = new mongoose.Schema({
   userId: {
     type: String
   },
+  userImg: String,
   postedBy: {
     type: String,
   },
@@ -42,7 +43,7 @@ export const getPins = (categoryId: String) => {
   return PinModel.find();
 }
 
-export const getPinById = (id: mongoose.Types.ObjectId) => {
+export const getPinById = (id: String) => {
   return PinModel.findById(id);
 }
 
@@ -52,4 +53,10 @@ export const createPinModel = (values: Record<string, any>) => {
 
 export const updatePin = (id: mongoose.Types.ObjectId, values: Record <string,any>) => {
   return PinModel.findByIdAndUpdate(id, values);
+}
+
+export const uploadComment = (id: String, comment: Record<string, any>) => {
+  return PinModel.findByIdAndUpdate(id, {
+    $push: { comments: comment },
+  });
 }

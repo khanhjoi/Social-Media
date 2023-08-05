@@ -85,12 +85,13 @@ export const register = async (req: express.Request, res: express.Response) => {
     if(exitingUser) {
       return res.status(400).json("Email had exit!!!");
     }
+    
 
     const salt = random();
     const user = await createUser({
       email,
       username,
-      image,
+      image: image ? image : "https://res.cloudinary.com/dxkokmfiu/image/upload/v1691221086/Sosial%20Media/wkxjlekeuq2y2cvejvtr.jpg",
       authentication: {
         salt,
         password: authentication(salt, password)

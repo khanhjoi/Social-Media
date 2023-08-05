@@ -1,12 +1,14 @@
 import mongoose from "mongoose";
 
 export const CommentSchema = new mongoose.Schema({
-  text: {
+  comment: {
     type: String,
     required: true
   },
+  id: String,
+  image: String,
   author: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: 'User'
   }
 });
