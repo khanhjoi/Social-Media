@@ -2,6 +2,7 @@ import React, { useState, useEffect }from 'react';
 import { MdDownloadForOffline } from 'react-icons/md';
 import { Link, useParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
+import { useNavigate } from 'react-router-dom';
 
 import MasonryLayout from './MasonryLayout';
 import Spinner from './Spinner';
@@ -13,39 +14,66 @@ const PinDetail = ({ user }) => {
   const [comment, setComment] = useState('');
   const [addingComment, setAddingComment] = useState(false)
   const { pinId } = useParams();
+  const navigate = useNavigate();
 
   // add comment
   const addComment = () => {
+
+
+
     if(comment) {
       setAddingComment(true);
-      setTimeout(() => {
+      console.log({author: user.username ? user?.username : `${user?.firstName} ${user?.lastName}`,
+      image: user?.image ? user?.image : user?.picture,
+      _id: user?._id ? user?._id : user?.email,
+      comment: comment})
+
+      fetch(`http://localhost:7070/api/pin/${pinId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({comment: {
+          author: user.username ? user?.username : `${user?.firstName} ${user?.lastName}`,
+          image: user?.image ? user?.image : user?.picture,
+          id: user?._id ? user?._id : user?.email,
+          comment: comment
+        }})
+      }).then(res => {
+        return res.json();
+      }).then(data => {
+        console.log(data)
         fetchPinDetail();
         setComment('');
         setAddingComment(false);
-      }, 600);
+      })
     }
   }
 
   // get pin detail from BE
   const fetchPinDetail = () => {
-    setTimeout(() => {
-      setPinDetail({
-        image: "https://i.pinimg.com/564x/67/4d/e6/674de60418e08b784d91036d1de3c809.jpg",
-        description: "hello everyone",
-        title: "Cat",
-        about: "this is a cat",
-        comments: [
-          {postBy: {user: "khanh", img: "https://i.pinimg.com/564x/73/56/34/735634fe9be69fc2ac828277cadb8896.jpg"}, comment: "it cute"},
-          {postBy: {user: "thu", img: "https://i.pinimg.com/564x/7c/bb/47/7cbb4725c110d39d2199ad1ff0a45732.jpg"}, comment: "i am cute"},
-        ]
-      });
-
-      setPins([
-        {id: 1, pin: {postBy: "khanh", destination: "https://i.pinimg.com/564x/35/0e/c2/350ec2d3cf699f1115d998925ba14c89.jpg", src: "https://i.pinimg.com/564x/35/0e/c2/350ec2d3cf699f1115d998925ba14c89.jpg"}},
-        {id: 2, pin: {postBy: "khanh2", destination: "https://i.pinimg.com/564x/7d/c9/db/7dc9db9a0f11c20bbfa7752454a97c32.jpg", src: "https://i.pinimg.com/564x/7d/c9/db/7dc9db9a0f11c20bbfa7752454a97c32.jpg"}},
-        {id: 3, pin: {postBy: "khanh3", destination: "https://i.pinimg.com/564x/35/78/70/35787019bf53be64436256c8c37b874b.jpg", src: "https://i.pinimg.com/564x/35/78/70/35787019bf53be64436256c8c37b874b.jpg"}},
-      ]);
-    }, 1000);
+    fetch(`http://localhost:7070/api/pin/${pinId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }).then(res => {
+        return res.json();
+      }).then(data => {
+        setPinDetail(data);
+      })
+    fetch("http://localhost:7070/api/pins" , {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }).then(res => {
+      return res.json();
+    }).then(data => {
+      if(data) {
+        setPins(data);
+      }
+    })
   };
 
   useEffect(() => {
@@ -56,11 +84,12 @@ const PinDetail = ({ user }) => {
   if(!pinDetail) return <Spinner message="Loading Pin" />
 
   return (
+    
   <>
     <div className='flex xl-flex-row flex-col m-auto bg-white' style={{ maxWidth: '1500px', borderRadius: '32px'}}>
       <div className='flex justify-center items-center md:items-start flex-initial'>
         <img 
-          src={pinDetail?.image}
+          src={pinDetail?.image ? pinDetail?.image.url : pinDetail?.picture }
           className='rounded-t-3xl rounded-b-lg'
           alt="user-post"
         />
@@ -69,7 +98,7 @@ const PinDetail = ({ user }) => {
         <div className='flex items-center justify-between'>
           <div className='flex gap-2 items-center'>
           <a 
-                href={`${pinDetail.url}`}
+                href={`${pinDetail?.image ? pinDetail?.image.url : pinDetail?.picture }`}
                 download
                 onClick={(e) => {e.stopPropagation()}}
                 className='bg-white w-9 h-9 rounded-full flex items-center justify-center text-dark text-xl opacity-75 hover:opacity-100'
@@ -100,27 +129,27 @@ const PinDetail = ({ user }) => {
         <h2 className='mt-2 text-2xl'>Comments</h2>
         <div className='max-h-370 overflow-y-auto'>
           {pinDetail?.comments?.map((comment, i) => (
-            <div className='flex gap-2 mt-5 items-center bg-white rounded-lg' key={i}>
+            <Link to={`/user-profile/${comment.id}`} className='flex gap-2 mt-5 items-center bg-white rounded-lg' key={i}>
               <img 
-                src={comment.postBy.img}
+                src={comment?.image}
                 alt="user-profile"
                 className='w-10 h-10 rounded-full cursor-pointer'
               />
               <div className='flex flex-col'>
-                <p className='font-bold'>{comment.postBy.user}</p>
+                <p className='font-bold'>{comment?.author}</p>
                 <p>{comment.comment}</p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
         <div className='flex flex-wrap mt-6 gap-3'>
-          <Link to={user?._id ? `user-profile/${user?.id}` : `user-profile/${user?.email}`} >
+          <div to={user?._id ? `/user-profile/${user?._id}` : `/user-profile/${user?.email}`} >
             <img
               className='w-10 h-10 rounded-full cursor-pointer'
               src={user?.image ? user?.image : user?.picture}
               alt="user-profile"
             />
-          </Link>
+          </div>
           <input 
             className='flex-1 border-gray-100 outline-none border-2 p-2 rounded-2xl focus:border-gray-300'
             type="text"

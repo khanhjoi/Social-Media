@@ -18,6 +18,7 @@ const categories = [
 ];
 
 const CreatePin = ({ user }) => {
+
   
   const [title, setTitle] = useState('');
   const [about, setAbout] = useState('');
@@ -97,7 +98,12 @@ const CreatePin = ({ user }) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ title, about, destination, category, imageAsset, userId: user?._id || user.email, postedBy: user?._id || user?.email})
+        body: JSON.stringify({ 
+          title, about, destination, category, imageAsset, 
+          userId: user?._id || user.email,
+          userImg: user?.image ? user?.image : user?.picture,
+          postedBy: user.username ? user?.username : `${user?.firstName} ${user?.lastName}`
+        })
     }).then(res => {
       return res.json();
     }).then(data => {

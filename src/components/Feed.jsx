@@ -28,6 +28,9 @@ const Feed = () => {
           setPins(data);
         }
         setLoading(false);
+      }).catch(err => {
+        setLoading(true);
+        console.log(err);
       })
     } else {
 
@@ -43,6 +46,9 @@ const Feed = () => {
           setPins(data);
         }
         setLoading(false);
+      }).catch(err => {
+        setLoading(true);
+        console.log(err);
       })
     }
   }, [categoryId])
