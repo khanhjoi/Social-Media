@@ -51,12 +51,14 @@ const Home = () => {
         setUser(backendUser);
       }
     }
+
+    if(!user) {
+      setUser(JSON.parse(localStorage.getItem('user')));
+    }
+
   }, []);
 
   // if user not exit redirect to login
-  if(!user) {
-    navigate("/login");
-  }
 
   useEffect(()=> {
     scrollRef.current.scrollTo(0,0)

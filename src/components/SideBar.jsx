@@ -1,7 +1,8 @@
 import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { RiHomeFill } from 'react-icons/ri';
-import { IoIosArrowForward } from 'react-icons/ri';
+import { BiLogOut } from 'react-icons/bi';
 
 import logo from '../assets/logo.png'
 
@@ -18,6 +19,13 @@ const categories = [
 ];
 
 const SideBar = ({user, closeToggle}) => {
+
+  const navigate = useNavigate();
+
+  const loutOUt = () => {
+    localStorage.clear();
+    return navigate("/login")
+  }
 
   const handleCloseSidebar = () => {
     if(closeToggle) closeToggle(false);
@@ -60,13 +68,16 @@ const SideBar = ({user, closeToggle}) => {
         </div>
       </div>
       {user && (
-        <Link
-          to={user._id ? `user-profile/${user._id}` : `user-profile/${user.email}`}
-          className='flex my-5 mb-3 gap-2 items-center bg-white rounded-lg shadow-lg mx-3'
-        >
-          <img src={user.image ? user.image : user.picture} className='w-10 h-10 rounded-full' alt='user profile'/>
-          <p>{user?.username ? user?.username : `${user.firstName} ${user.lastName}`}</p>
-        </Link>
+        <div className='flex my-6 mb-3 gap-2 items-center bg-white rounded-lg shadow-lg justify-between'> 
+          <Link
+            to={user._id ? `user-profile/${user._id}` : `user-profile/${user.email}`}
+            className='flex gap-2 items-center mx-3 '
+          >
+            <img src={user.image ? user.image : user.picture} className='w-10 h-10 rounded-full' alt='user profile'/>
+            <p>{user?.username ? user?.username : `${user.firstName} ${user.lastName}`}</p>
+          </Link>
+          <BiLogOut onClick={loutOUt}  className='w-8 h-8 mr-6'/>
+          </div>
       )}
     </div>
   )

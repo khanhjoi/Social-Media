@@ -19,14 +19,8 @@ const PinDetail = ({ user }) => {
   // add comment
   const addComment = () => {
 
-
-
     if(comment) {
       setAddingComment(true);
-      console.log({author: user.username ? user?.username : `${user?.firstName} ${user?.lastName}`,
-      image: user?.image ? user?.image : user?.picture,
-      _id: user?._id ? user?._id : user?.email,
-      comment: comment})
 
       fetch(`http://localhost:7070/api/pin/${pinId}`, {
         method: "POST",
@@ -42,7 +36,6 @@ const PinDetail = ({ user }) => {
       }).then(res => {
         return res.json();
       }).then(data => {
-        console.log(data)
         fetchPinDetail();
         setComment('');
         setAddingComment(false);
@@ -79,7 +72,6 @@ const PinDetail = ({ user }) => {
   useEffect(() => {
     fetchPinDetail();
   }, [pinId]);
-  
 
   if(!pinDetail) return <Spinner message="Loading Pin" />
 
@@ -118,18 +110,18 @@ const PinDetail = ({ user }) => {
           <h1 className='text-4xl font-bold break-words mt-3'>{pinDetail.title}</h1>
           <p className='mt-3'> {pinDetail.about}</p>
         </div>
-        <Link to={user?._id ? `/user-profile/${user?._id}` : `/user-profile/${user?.email}`} className='flex gap-2 mt-2 items-center'>
+        <Link to={`/user-profile/${pinDetail.userId}`} className='flex gap-2 mt-2 items-center'>
           <img
             className='w-8 h-8 rounded-full object-cover'
-            src={user?.image ? user?.image : user?.picture}
+            src={pinDetail.userImg}
             alt="user-profile"
           />
-          <p className='font-semibold capitalize cursor-pointer'>{user.username ? user.username : `${user.firstName} ${user.lastName}`}</p>
+          <p className='font-semibold capitalize cursor-pointer'>{user?.username ? user?.username : `${user?.firstName} ${user?.lastName}`}</p>
         </Link>
         <h2 className='mt-2 text-2xl'>Comments</h2>
         <div className='max-h-370 overflow-y-auto'>
           {pinDetail?.comments?.map((comment, i) => (
-            <Link to={`/user-profile/${comment.id}`} className='flex gap-2 mt-5 items-center bg-white rounded-lg' key={i}>
+            <Link to={`/user-profile/${comment.id}`} className='flex gap-2 mt-5 items-center bg-white rounded-lg ml-2' key={i}>
               <img 
                 src={comment?.image}
                 alt="user-profile"

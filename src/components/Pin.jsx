@@ -1,18 +1,66 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { MdDownloadForOffline } from 'react-icons/md';
 import { AiTwotoneDelete } from 'react-icons/ai';
+import { AiOutlineHeart } from 'react-icons/ai';
+import { AiTwotoneHeart } from 'react-icons/ai';
 import { BsFillArrowUpRightCircleFill } from 'react-icons/bs';
 
 
 
 const Pin = ({ pin }) => {
   const [postHovered, setPostHovered] = useState(false);
-  const [savingPost, setSavingPost] = useState(false);
+  const [savingPin, setSavingPin] = useState([]);
+  const [alreadySaved, setAlreadySaved] = useState(false);
 
   const navigate = useNavigate();
-  console.log(pin)
+
+  const savePin = (e) => {
+    e.stopPropagation()
+
+    const user  = JSON.parse(localStorage.getItem('user'));
+
+    const userId = user?._id ? user._id : user.email;
+
+    fetch('http://localhost:7070/api/pin/save', {
+      method: 'PATCH',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ idUser: userId, idPin: pin._id})
+    }).then(res => {
+      return res.json();
+    }).then(data => {  
+      console.log(data);
+      setSavingPin(data.result.Save);
+      setAlreadySaved(data.alreadySaved);
+    })
+  }
+
+  useEffect(() => {
+    const user  = JSON.parse(localStorage.getItem('user'));
+
+    const userId = user?._id ? user._id : user.email;
+
+    fetch(`http://localhost:7070/api/pin/${pin._id}`, {
+      method: 'GET',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+    }).then(res => {
+      return res.json();
+    }).then(data => {
+      const check = data.save.includes(userId);
+      console.log(check);
+      if(check) {
+        setAlreadySaved(true);
+      }else {
+        setAlreadySaved(false);
+      }
+    })
+  },[])
+
   return (
 
     <div className='m-2'>
@@ -25,7 +73,7 @@ const Pin = ({ pin }) => {
       <img className="rounded-lg w-full" alt="user-post" src={pin?.image?.url}/>
       {postHovered && (
         <div
-          className='absolute top-0 w-full h-full flex flex-col justify-between p-1 pr-2 pt-2 pb-2 z-50'
+          className='absolute top-0 w-full h-full flex flex-col justify-between p-2 pr-2 pt-2 pb-2 z-50'
           style={{ height: '100%' }}
         >
           <div className='flex items-center justify-between'>
@@ -39,15 +87,15 @@ const Pin = ({ pin }) => {
                 <MdDownloadForOffline />
               </a>
             </div>
-            {/* {alreadySaved?.length !== 0 ? (
-              <button>
-                Saved
+            {!alreadySaved ? (
+              <button className='text-pink-400 bg-pink-100 rounded-full w-9 h-9 flex items-center justify-center text-xl opacity-75 hover:opacity-100' onClick={savePin}>
+                <AiOutlineHeart/>
               </button>
             ): (
-              <button>
-                Save
+              <button className='text-pink-400 bg-pink-100 rounded-full w-9 h-9 flex items-center justify-center text-xl opacity-75 hover:opacity-100'  onClick={savePin}>
+                <AiTwotoneHeart/>
               </button>
-            )} */}
+            )}
           </div>
           <div className='flex justify-between items-center gap-2 w-full'>
             {pin?.destination && (

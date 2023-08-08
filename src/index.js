@@ -13,6 +13,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import App from './App';
 import ErrorPage from './ErrorPage';
 import Login from './components/Login'
+import Register from './components/Register'
 import './index.css';
 
 
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login/>,
+  },
+  {
+    path: "/register",
+    element: <Register />,
   },
 ]);
 

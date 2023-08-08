@@ -28,7 +28,10 @@ const Form = ({ title, onSubmit, method }) => {
           <p className='flex justify-center items-center font-bold mb-6 mr-4 text-2xl text-black'>{title}</p>
           <Input type="text" id="email" label="Email address" />
           <Input type="password" id="password" label="Password" />
-          <button type="submit" className='bg-blue-500 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded-lg'>{title}</button>
+          <div className='flex'>
+            <button type="submit" className='bg-blue-500 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded-lg mx-4'>{title}</button>
+            <button onClick={() => {navigate('/register')}} className='bg-blue-500 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded-lg mx-4' >Register</button>
+          </div>
         </>
       )}
       {/* register */}
@@ -37,8 +40,10 @@ const Form = ({ title, onSubmit, method }) => {
           <p className='flex justify-center items-center font-bold mb-6 mr-4 text-2xl text-black'>{title}</p>
           <Input id="username" label="Your name" />
           <Input id="email" label="Email address" />
-          <Input id="password" label="password" />
-          <button className='bg-blue-500 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded-lg'>{title}</button>
+          <Input type="password" id="password" label="Password"  />
+          <div className='flex'>
+            <button type="submit" className='bg-blue-500 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded-lg mx-4'>{title}</button>
+          </div>
         </>
       )}
       
