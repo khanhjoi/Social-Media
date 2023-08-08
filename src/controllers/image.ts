@@ -5,6 +5,7 @@ import cloudinary from '../helpers/upload';
 export const upload = async (req:express.Request, res:express.Response) => {
   try {
     const { image } = req.body;
+    
     const uploadResponse = await cloudinary.uploader.upload(image,{
       upload_preset: 'Sosial Media'
     })

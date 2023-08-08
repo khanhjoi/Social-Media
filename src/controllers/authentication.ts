@@ -1,17 +1,16 @@
 import express from 'express';
-import { getUserByEmail, createUser } from '../models/Users';
+import { getUserByEmail, createUser, getUserByIdAndUpdate } from '../models/Users';
 import { authentication, random, verifyGoogleToken } from '../helpers';
 
 export const login =async (req: express.Request, res: express.Response) => {
   try {
     const {email, password} = req.body;
     if(!email || !password) {
-     return res.status(400).json({message: "Lack of information!"});
+     return res.status(400).json({error: "Lack of information!"});
     }
 
-    const user = await getUserByEmail(email).select('+authentication.salt +authentication.password');
+    const user = await getUserByEmail(email).select('+authentication.salt +authentication.password').exec();
     
-
     if(user != undefined) {
       
       const expectedHash = authentication(user?.authentication?.salt, password);
@@ -19,23 +18,21 @@ export const login =async (req: express.Request, res: express.Response) => {
       if(user?.authentication?.password !== expectedHash) {
         return res.status(403).json({message: "Password is incorrect"})
       } 
+
       const salt = random();
       
       if(user.authentication) {
         user.authentication.sessionToken = authentication(salt, user._id.toString());
-        
-        await user.save();
-        
+        await getUserByIdAndUpdate(user);  
         res.cookie('USER-AUTH', user.authentication.sessionToken);
       }
       
     } else {
       return res.status(400).json({message: "unregistered user, Please register!"});
     }
-    
+    console.log(user);
     return res.status(200).json({user: user});
   } catch (error) {
-    console.log(error);
     return res.sendStatus(400);
   }
 }
@@ -77,13 +74,13 @@ export const register = async (req: express.Request, res: express.Response) => {
 
     
     if(!username || !password) {
-      return res.status(400).json("Username Or Password can't empty");
+      return res.status(400).json({error: "Username Or Password can't empty"});
     }
     
     const exitingUser = await getUserByEmail(email);
 
     if(exitingUser) {
-      return res.status(400).json("Email had exit!!!");
+      return res.status(400).json({error: "Email had exit!!!"});
     }
     
 
@@ -98,9 +95,10 @@ export const register = async (req: express.Request, res: express.Response) => {
       }
     })
 
-    return res.status(200).json(user);
+    return res.status(200).json({ message: "register success"});
   } catch (error) {
     console.log(error);
     return res.sendStatus(400);
   }
 }
+

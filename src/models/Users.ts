@@ -1,3 +1,4 @@
+import { required } from "joi";
 import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema({
@@ -12,9 +13,10 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  Save: {
-    type: mongoose.Schema.Types.ObjectId
-  },
+  Save: [{
+    type: String,
+    required: false
+  }],
   authentication: {
     password: {type: String, required: true, select: false},
     salt: {type: String, select: false},
@@ -37,6 +39,10 @@ export const getUserById = (id:string) => {
   return UserModel.findById(id);
 }
 
+export const getUserByIdAndUpdate = (user: Record<string, any>) => {
+  return UserModel.findByIdAndUpdate(user._id, user);
+}
+
 export const getUserBySessionToken = (sessionToken: string) => {
   return UserModel.findOne({
    'authentication.sessionToken': sessionToken,
@@ -52,4 +58,20 @@ export const createUser = (values: Record<string, any>) => {
 
 export const updateUser = (id: string, values: Record<string, any>) => {
   return UserModel.findByIdAndUpdate(id, values);
+}
+
+export const saveUser = (id: string, pinId: String ) => {
+  return UserModel.findByIdAndUpdate(id, {
+    $push: {
+      Save: pinId,
+    }
+  })
+}
+
+export const removeSaveUser = (id: string, pinId: String ) => {
+  return UserModel.findByIdAndUpdate(id, {
+    $pull: {
+      Save: pinId,
+    }
+  })
 }

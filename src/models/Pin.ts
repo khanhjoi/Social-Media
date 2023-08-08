@@ -26,8 +26,8 @@ const PinSchema = new mongoose.Schema({
   postedBy: {
     type: String,
   },
-  save: [{
-    type: mongoose.Schema.Types.ObjectId,
+  Save: [{
+    type: String,
   }],
   comments: [CommentSchema]
 });
@@ -59,4 +59,20 @@ export const uploadComment = (id: String, comment: Record<string, any>) => {
   return PinModel.findByIdAndUpdate(id, {
     $push: { comments: comment },
   });
+}
+
+export const savePin = (id: string, userId: String) => {
+  return PinModel.findByIdAndUpdate(id, {
+    $push: {
+      save: userId,
+    }
+  })
+}
+
+export const removeSavePin = (id: string, userId: String) => {
+  return PinModel.findByIdAndUpdate(id, {
+    $pull: {
+      save: userId,
+    }
+  })
 }
