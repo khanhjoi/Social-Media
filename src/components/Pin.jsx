@@ -51,8 +51,7 @@ const Pin = ({ pin }) => {
     }).then(res => {
       return res.json();
     }).then(data => {
-      const check = data.save.includes(userId);
-      console.log(check);
+      const check = data?.Save.includes(userId);
       if(check) {
         setAlreadySaved(true);
       }else {

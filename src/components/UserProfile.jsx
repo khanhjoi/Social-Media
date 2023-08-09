@@ -33,20 +33,35 @@ const UserProfile = () => {
       }).then(res => {
         return res.json();
       }).then(data => {
-        console.log(data);
+        if(data.pins) {
+          setPins(data.pins)
+        }
       })
     }
   }, [userId])
 
-  useEffect(() => {
-
-  }, [text, userId])
   
-  console.log(user);
+  useEffect(() => {
+    fetch(`http://localhost:7070/api/user/${activeBtn}/${userId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }).then(res => {
+      return res.json();
+    }).then(data => {
+      if(data.pins) {
+        setPins(data.pins)
+      }else {
+        setPins(null)
+      }
+    })
+  },[text]);
 
   if(!user) {
     return <Spinner message="Loading profile..."/>
-  }
+  } 
+
 
   return (
     <div className='relative pb-2 h-full justify-center items-center'>
