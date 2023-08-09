@@ -119,13 +119,13 @@ export const addSave = async (req:express.Request, res: express.Response) => {
 
     // push or remove pin 
     if(index !== -1) {
-      result = await removeSaveUser(idUser, idPin);
+      await removeSaveUser(idUser, idPin);
       alreadySaved = false;
-      await removeSavePin(idPin, idUser);
+      result = await removeSavePin(idPin, idUser);
     }else {
-      result = await saveUser(idUser, idPin);
+      await saveUser(idUser, idPin);
       alreadySaved = true;
-      await savePin(idPin, idUser);
+      result =await savePin(idPin, idUser);
     }
 
     return res.status(200).json({result, alreadySaved});

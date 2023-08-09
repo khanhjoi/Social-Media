@@ -2,7 +2,7 @@ import express from 'express';
 import { getUserByEmail, createUser, getUserByIdAndUpdate } from '../models/Users';
 import { authentication, random, verifyGoogleToken } from '../helpers';
 
-export const login =async (req: express.Request, res: express.Response) => {
+export const login = async (req: express.Request, res: express.Response) => {
   try {
     const {email, password} = req.body;
     if(!email || !password) {
@@ -30,14 +30,13 @@ export const login =async (req: express.Request, res: express.Response) => {
     } else {
       return res.status(400).json({message: "unregistered user, Please register!"});
     }
-    console.log(user);
     return res.status(200).json({user: user});
   } catch (error) {
     return res.sendStatus(400);
   }
 }
 
-export const loginGoogle =async (req:express.Request, res: express.Response) => {
+export const loginGoogle = async (req:express.Request, res: express.Response) => {
   try {
     if(req.body.credential) {
 
