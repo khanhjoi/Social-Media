@@ -1,9 +1,10 @@
 import express from 'express';
-import { getAllPin, createPin, getPin, addComment, addSave } from '../controllers/pin';
+import { getAllPin, createPin, getPin, addComment, addSave, search } from '../controllers/pin';
 
 export default(router: express.Router) => {
   router.get('/pins', getAllPin);
   router.get('/pin/:id', getPin);
+  router.get('/pins/:search', search);
   router.patch('/pin/save', addSave);
   router.post('/pin/:id', addComment);
   router.post('/pins', getAllPin);

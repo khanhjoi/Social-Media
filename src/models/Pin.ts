@@ -48,12 +48,17 @@ export const getPinById = (id: String) => {
   return PinModel.findById(id);
 }
 
+export const getPinByInformation = (information: string) => {
+  return PinModel.find({
+    $or: [
+      { title: { $regex: information } },
+      { about: { $regex: information } }
+    ]
+  });
+};
+
 export const createPinModel = (values: Record<string, any>) => {
    return PinModel.create(values);
-}
-
-export const updatePin = (id: mongoose.Types.ObjectId, values: Record <string,any>) => {
-  return PinModel.findByIdAndUpdate(id, values);
 }
 
 export const uploadComment = (id: String, comment: Record<string, any>) => {

@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { savePin, removeSavePin, getPins, createPinModel, getPinById, uploadComment } from '../models/Pin';
+import { savePin, removeSavePin, getPins, createPinModel, getPinById, uploadComment, getPinByInformation } from '../models/Pin';
 import { saveUser, removeSaveUser, getUserById, getUserByEmail } from '../models/Users';
 
 export const createPin = async (req: express.Request, res: express.Response) => {
@@ -129,6 +129,23 @@ export const addSave = async (req:express.Request, res: express.Response) => {
     }
 
     return res.status(200).json({result, alreadySaved});
+  } catch (error) {
+    return res.status(400).json(error);
+  }
+}
+
+export const search = async (req:express.Request, res: express.Response) => {
+  try {
+    const searchTerm  = req.params['search'];
+
+    const pins = await getPinByInformation(searchTerm);
+
+    if(!pins){
+      return res.status(400).json({error: "something wrong"})
+    }
+
+    return res.status(200).json(pins);
+ 
   } catch (error) {
     return res.status(400).json(error);
   }
