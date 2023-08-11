@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 
 import { AiOutlineLogout } from 'react-icons/ai';
 import { googleLogout  } from '@react-oauth/google';
+import { toast } from 'react-toastify';
 
 import MasonryLayout from './MasonryLayout';
 import Spinner from './Spinner';
@@ -21,23 +22,37 @@ const UserProfile = () => {
   const { userId } =useParams();
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if(user) {
-      setUser(user);
-    }else {
-      fetch(`http://localhost:7070/api/user/${userId}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json"
-        }
-      }).then(res => {
-        return res.json();
-      }).then(data => {
-        if(data.pins) {
-          setPins(data.pins)
-        }
-      })
+    let user = JSON.parse(localStorage.getItem('user'));
+
+    if(!user) {
+      user = {
+        username: 'Guest',
+        image: 'https://res.cloudinary.com/dxkokmfiu/image/upload/v1691221086/Sosial%20Media/wkxjlekeuq2y2cvejvtr.jpg',
+        email: 'guest@example.com',
+      }
     }
+    // check user is a guest or user in system
+    if(user.username === 'Guest') {
+      toast.warn('You must be user to use this function');
+      return navigate("/login");
+    }else {
+      if(user) {
+        setUser(user);
+      }else {
+        fetch(`http://localhost:7070/api/user/${userId}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }).then(res => {
+          return res.json();
+        }).then(data => {
+          if(data.pins) {
+            setPins(data.pins)
+          }
+        })
+      }
+    }  
   }, [userId])
 
   

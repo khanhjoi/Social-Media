@@ -3,7 +3,7 @@ import { MdDownloadForOffline } from 'react-icons/md';
 import { Link, useParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate } from 'react-router-dom';
-
+import { toast } from 'react-toastify';
 import MasonryLayout from './MasonryLayout';
 import Spinner from './Spinner';
 
@@ -18,28 +18,31 @@ const PinDetail = ({ user }) => {
 
   // add comment
   const addComment = () => {
-
-    if(comment) {
-      setAddingComment(true);
-
-      fetch(`http://localhost:7070/api/pin/${pinId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({comment: {
-          author: user.username ? user?.username : `${user?.firstName} ${user?.lastName}`,
-          image: user?.image ? user?.image : user?.picture,
-          id: user?._id ? user?._id : user?.email,
-          comment: comment
-        }})
-      }).then(res => {
-        return res.json();
-      }).then(data => {
-        fetchPinDetail();
-        setComment('');
-        setAddingComment(false);
-      })
+    if(comment) {   
+      if(user.username === 'Guest') {
+        toast.warn('You must be user to use this function');
+        return navigate("/login");
+      }else {
+        setAddingComment(true);
+        fetch(`http://localhost:7070/api/pin/${pinId}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({comment: {
+            author: user.username ? user?.username : `${user?.firstName} ${user?.lastName}`,
+            image: user?.image ? user?.image : user?.picture,
+            id: user?._id ? user?._id : user?.email,
+            comment: comment
+          }})
+        }).then(res => {
+          return res.json();
+        }).then(data => {
+          fetchPinDetail();
+          setComment('');
+          setAddingComment(false);
+        })
+      }  
     }
   }
 

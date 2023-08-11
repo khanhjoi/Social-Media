@@ -6,6 +6,8 @@ import { AiTwotoneDelete } from 'react-icons/ai';
 import { AiOutlineHeart } from 'react-icons/ai';
 import { AiTwotoneHeart } from 'react-icons/ai';
 import { BsFillArrowUpRightCircleFill } from 'react-icons/bs';
+import { toast } from 'react-toastify';
+
 
 
 
@@ -19,27 +21,49 @@ const Pin = ({ pin }) => {
   const savePin = (e) => {
     e.stopPropagation()
 
-    const user  = JSON.parse(localStorage.getItem('user'));
+    let user  = JSON.parse(localStorage.getItem('user'));
+    
+    if(!user) {
+      user = {
+        username: 'Guest',
+        image: 'https://res.cloudinary.com/dxkokmfiu/image/upload/v1691221086/Sosial%20Media/wkxjlekeuq2y2cvejvtr.jpg',
+        email: 'guest@example.com',
+      }
+    }
 
-    const userId = user?._id ? user._id : user.email;
+    // check user is a guest or user in system
+    if(user.username === 'Guest') {
+      toast.warn('You must be user to use this function');
+      return navigate("/login");
+    } else {
+      const userId = user?._id ? user._id : user.email;
 
-    fetch('http://localhost:7070/api/pin/save', {
-      method: 'PATCH',
-      headers: {
-          'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ idUser: userId, idPin: pin._id})
-    }).then(res => {
-      return res.json();
-    }).then(data => {  
-      console.log(data);
-      setSavingPin(data.result.Save);
-      setAlreadySaved(data.alreadySaved);
-    })
+      fetch('http://localhost:7070/api/pin/save', {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ idUser: userId, idPin: pin._id})
+      }).then(res => {
+        return res.json();
+      }).then(data => {  
+        console.log(data);
+        setSavingPin(data.result.Save);
+        setAlreadySaved(data.alreadySaved);
+      })
+    }
   }
 
   useEffect(() => {
-    const user  = JSON.parse(localStorage.getItem('user'));
+    let user  = JSON.parse(localStorage.getItem('user'));
+    
+    if(!user) {
+      user = {
+        username: 'Guest',
+        image: 'https://res.cloudinary.com/dxkokmfiu/image/upload/v1691221086/Sosial%20Media/wkxjlekeuq2y2cvejvtr.jpg',
+        email: 'guest@example.com',
+      }
+    }
 
     const userId = user?._id ? user._id : user.email;
 

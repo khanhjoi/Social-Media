@@ -19,7 +19,6 @@ const categories = [
 
 const CreatePin = ({ user }) => {
 
-  
   const [title, setTitle] = useState('');
   const [about, setAbout] = useState('');
   const [destination, setDestination] = useState('');
@@ -116,6 +115,12 @@ const CreatePin = ({ user }) => {
     }
   }
   
+  useEffect(() => {
+    if(user.username === 'Guest') {
+      toast.warn('You must be user to use this function');
+      return navigate("/login");
+    }
+  }, [user]);
 
   return (
     <div className='flex flex-col justify-center items-center mt-5 lg:h-4/5'>

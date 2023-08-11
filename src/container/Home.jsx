@@ -58,11 +58,21 @@ const Home = () => {
 
   }, []);
 
-  // if user not exit redirect to login
+
+  if(!user) {
+    const guest = {
+      username: 'Guest',
+      image: 'https://res.cloudinary.com/dxkokmfiu/image/upload/v1691221086/Sosial%20Media/wkxjlekeuq2y2cvejvtr.jpg',
+      email: 'guest@example.com',
+    }
+    setUser(guest);
+   }
 
   useEffect(()=> {
     scrollRef.current.scrollTo(0,0)
   },[]);
+
+   // if user not exit redirect to login
 
   return (
     <div className='
