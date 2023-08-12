@@ -59,13 +59,17 @@ export const getPinByInformation = (information: string) => {
 
 export const createPinModel = (values: Record<string, any>) => {
    return PinModel.create(values);
-}
+};
+
+export const uploadPinModel = (id:string, values: Record<string, any>) => {
+  return PinModel.findByIdAndUpdate(id, values)
+};
 
 export const uploadComment = (id: String, comment: Record<string, any>) => {
   return PinModel.findByIdAndUpdate(id, {
     $push: { comments: comment },
   });
-}
+};
 
 export const savePin = (id: string, userId: String) => {
   return PinModel.findByIdAndUpdate(id, {
@@ -73,6 +77,10 @@ export const savePin = (id: string, userId: String) => {
       Save: userId,
     }
   })
+};
+
+export const deletePinModel = (id: String) => {
+  return PinModel.findByIdAndDelete(id);
 }
 
 export const removeSavePin = (id: string, userId: String) => {
@@ -81,7 +89,7 @@ export const removeSavePin = (id: string, userId: String) => {
       Save: userId,
     }
   })
-}
+};
 
 export const findPinsSaveByIds = (ids: string[]) => {
   return PinModel.find({

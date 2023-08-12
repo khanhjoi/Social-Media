@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { savePin, removeSavePin, getPins, createPinModel, getPinById, uploadComment, getPinByInformation } from '../models/Pin';
+import { savePin, removeSavePin, getPins, createPinModel, getPinById, uploadComment, getPinByInformation, deletePinModel, uploadPinModel } from '../models/Pin';
 import { saveUser, removeSaveUser, getUserById, getUserByEmail } from '../models/Users';
 
 export const createPin = async (req: express.Request, res: express.Response) => {
@@ -38,6 +38,62 @@ export const createPin = async (req: express.Request, res: express.Response) => 
   }
 }
 
+export const updatePin = async (req: express.Request, res: express.Response) => {
+  try {
+    const { id ,title, about, destination, imageAsset, category, userId, postedBy, userImg} = req.body;
+    
+    
+    if(!imageAsset) {
+      return res.status(400).json({ message: "Pin must have a Image!!!"});
+    }
+    
+    if(!title || !category) {
+      return res.status(400).json({ message: "lack of title or category"});
+    }
+    console.log(id)
+    
+
+    const pin = await uploadPinModel(id ,{
+      title,
+      about,
+      destination,
+      category,
+      image: imageAsset,
+      userId,
+      postedBy,
+      userImg
+    });
+    
+
+    if(!pin) {
+      return res.status(400).json({ message: "Something Wrong!!"})
+    }
+
+    return res.status(200).json(pin);
+
+  } catch (error) {
+    return res.status(400).json(error);
+  }
+}
+
+export const deletePin =async (req:express.Request, res: express.Response) => {
+  try {
+    const { id } = req.body;
+
+    const result = await deletePinModel(id);
+
+    if(!result) {
+      return res.status(400).json({error: "delete fail!!"});
+    }
+
+    return res.status(200).json({message: "delete success!!"})
+
+  } catch (error) {
+    return res.status(400).json(error);
+  }
+}
+
+
 export const getAllPin = async (req: express.Request, res: express.Response) => {
   try {
     const { categoryId } = req.body;
@@ -70,6 +126,9 @@ export const getPin = async (req: express.Request, res: express.Response) => {
     return res.status(400).json(error);
   }
 }
+
+
+
 
 export const addComment = async (req:express.Request, res: express.Response) => {
   try {
@@ -133,6 +192,7 @@ export const addSave = async (req:express.Request, res: express.Response) => {
     return res.status(400).json(error);
   }
 }
+
 
 export const search = async (req:express.Request, res: express.Response) => {
   try {
