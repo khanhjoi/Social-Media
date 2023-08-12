@@ -1,11 +1,14 @@
 import React, { useState, useEffect }from 'react';
-import { MdDownloadForOffline } from 'react-icons/md';
-import { Link, useParams } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
-import { useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate  } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import MasonryLayout from './MasonryLayout';
 import Spinner from './Spinner';
+
+import { MdDownloadForOffline } from 'react-icons/md';
+import { BiDotsVertical } from 'react-icons/bi';
+import { AiOutlineEdit } from 'react-icons/ai';
+import { AiFillDelete } from 'react-icons/ai';
+import { AiOutlineClose } from 'react-icons/ai';
 
 const PinDetail = ({ user }) => {
 
@@ -13,8 +16,14 @@ const PinDetail = ({ user }) => {
   const [pinDetail, setPinDetail] = useState(null);
   const [comment, setComment] = useState('');
   const [addingComment, setAddingComment] = useState(false)
+  const [menu, setMenu] = useState(false);
+
   const { pinId } = useParams();
   const navigate = useNavigate();
+
+  const handleMenuToggle = () => {
+    setMenu(!menu);
+  };
 
   // add comment
   const addComment = () => {
@@ -46,6 +55,27 @@ const PinDetail = ({ user }) => {
     }
   }
 
+  // delete pin
+  const deletePin = () => {
+    fetch(`http://localhost:7070/api/deletePin`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({id: pinDetail._id})
+      }).then(res => {
+        return res.json();
+      }).then(data => {
+        if(data.message) {
+          toast.success(data.message);
+          return navigate('/');
+        }
+        if(data.error) {
+          toast.error(data.error);
+        }
+      })
+  }
+
   // get pin detail from BE
   const fetchPinDetail = () => {
     fetch(`http://localhost:7070/api/pin/${pinId}`, {
@@ -56,8 +86,17 @@ const PinDetail = ({ user }) => {
       }).then(res => {
         return res.json();
       }).then(data => {
+        if(data.name) {
+         throw new Error("can't get pinDetail")
+        }
         setPinDetail(data);
-      })
+      }).catch(error => {
+        toast.error("can't get pinDetail")
+        setTimeout(() => {
+          return navigate('/')
+        },4000)
+      }) 
+
     fetch("http://localhost:7070/api/pins" , {
       method: 'GET',
       headers: {
@@ -73,8 +112,9 @@ const PinDetail = ({ user }) => {
   };
 
   useEffect(() => {
-    fetchPinDetail();
+    fetchPinDetail(); 
   }, [pinId]);
+  
 
   if(!pinDetail) return <Spinner message="Loading Pin" />
 
@@ -92,14 +132,49 @@ const PinDetail = ({ user }) => {
       <div className='w-full p-5 flex-1 xl:min-w-620'>
         <div className='flex items-center justify-between'>
           <div className='flex gap-2 items-center'>
-          <a 
-                href={`${pinDetail?.image ? pinDetail?.image.url : pinDetail?.picture }`}
-                download
-                onClick={(e) => {e.stopPropagation()}}
+          {!menu ? (
+            <a
+              onClick={handleMenuToggle}
+              className='bg-white w-9 h-9 rounded-full flex items-center justify-center text-dark text-xl opacity-75 hover:opacity-100'
+            >
+                <BiDotsVertical />
+            </a>
+          ): (
+            <>
+              <a
+                onClick={handleMenuToggle}
                 className='bg-white w-9 h-9 rounded-full flex items-center justify-center text-dark text-xl opacity-75 hover:opacity-100'
               >
-                <MdDownloadForOffline />
+                  <AiOutlineClose />
               </a>
+              <div className='flex ml-20  rounded-lg shadow-2xl border border-slate-600'> 
+                <a 
+                    href={`${pinDetail?.image ? pinDetail?.image.url : pinDetail?.picture }`}
+                    download
+                    onClick={(e) => {e.stopPropagation()}}
+                    className='bg-white w-9 h-9 rounded-full flex items-center justify-center text-dark text-xl opacity-75 hover:opacity-100'
+                  >
+                    <MdDownloadForOffline />
+                </a>
+                {user?._id === pinDetail?.userId || user.email=== pinDetail?.userId ?(
+                  <>
+                    <Link  
+                      className='bg-white w-9 h-9 rounded-full flex items-center justify-center text-dark text-xl opacity-75 hover:opacity-100'
+                      to={`/edit-pin/${pinDetail._id}`}
+                    >
+                      <AiOutlineEdit />
+                    </Link>
+                    <a 
+                        onClick={deletePin}
+                        className='bg-white w-9 h-9 rounded-full flex items-center justify-center text-dark text-xl opacity-75 hover:opacity-100'
+                      >
+                        <AiFillDelete />
+                    </a>
+                 </>
+                ): (<></>)}
+              </div>
+            </> 
+          )}   
           </div>
           <a
             href={`${pinDetail.description}`}

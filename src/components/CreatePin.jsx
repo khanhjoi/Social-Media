@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 import { AiOutlineCloudUpload } from 'react-icons/ai'
@@ -18,16 +18,16 @@ const categories = [
 ];
 
 const CreatePin = ({ user }) => {
-
+  
+  const [upload, setUpload] = useState(false);
   const [title, setTitle] = useState('');
   const [about, setAbout] = useState('');
   const [destination, setDestination] = useState('');
   const [loading, setLoading] = useState(false);
-  const [fields, setFields] = useState(false);
   const [category, setCategory] = useState(null);
   const [imageAsset, setImageAsset] = useState(null);
   const [wrongImageType, setWrongImageType] = useState(false);
-
+  const { id } = useParams();
   const navigate = useNavigate();
 
   const uploadImage =  (e) => {
@@ -91,30 +91,59 @@ const CreatePin = ({ user }) => {
   }
 
   const savePin = () => {
-    if(title &&  imageAsset && category) {
-      fetch("http://localhost:7070/api/createPin" , {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          title, about, destination, category, imageAsset, 
-          userId: user?._id || user.email,
-          userImg: user?.image ? user?.image : user?.picture,
-          postedBy: user.username ? user?.username : `${user?.firstName} ${user?.lastName}`
-        })
-    }).then(res => {
-      return res.json();
-    }).then(data => {
-      if(data) {
-        return navigate("/");
+      if(title &&  imageAsset && category) {
+        fetch("http://localhost:7070/api/createPin" , {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            title, about, destination, category, imageAsset, 
+            userId: user?._id || user.email,
+            userImg: user?.image ? user?.image : user?.picture,
+            postedBy: user.username ? user?.username : `${user?.firstName} ${user?.lastName}`
+          })
+      }).then(res => {
+        return res.json();
+      }).then(data => {
+        if(data) {
+          return navigate("/");
+        }
+      })
+      } else {
+        toast.error('Lack information')
       }
-    })
-    } else {
-      toast.error('Lack information')
+  }
+
+  const updatePin = () => {
+    if(id) {
+      if(title &&  imageAsset && category) {
+        fetch("http://localhost:7070/api/pin/update" , {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id,
+            title, about, destination, category, imageAsset, 
+            userId: user?._id || user.email,
+            userImg: user?.image ? user?.image : user?.picture,
+            postedBy: user.username ? user?.username : `${user?.firstName} ${user?.lastName}` 
+          })
+      }).then(res => {
+        return res.json();
+      }).then(data => {
+        if(data._id) {
+          toast.success('Update success');
+          return navigate('/');
+        }
+      })
+      } else {
+        toast.error('Lack information');
+      }
     }
   }
-  
+
   useEffect(() => {
     if(user.username === 'Guest') {
       toast.warn('You must be user to use this function');
@@ -122,13 +151,28 @@ const CreatePin = ({ user }) => {
     }
   }, [user]);
 
+  useEffect(() => {
+    if(id) {
+      fetch(`http://localhost:7070/api/pin/${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }).then(res => {
+        return res.json();
+      }).then(data => {
+        setUpload(true);
+        setTitle(data.title)
+        setAbout(data.about)
+        setDestination(data.destination)
+        setImageAsset(data.image)
+        setCategory(data.category)
+      })
+    }  
+  },[id]);
+
   return (
     <div className='flex flex-col justify-center items-center mt-5 lg:h-4/5'>
-      {fields && (
-        <p className='text-red-500 mb-5 text-xl transition-all duration-150 ease-in'>
-          Please fill in all the fields
-        </p>
-      )}
       <div className='flex lg:flex-row flex-col justify-center items-center bg-white lg:p-5 p-3 lg:w-4/5 w-full'>
         <div className='bg-secondaryColor p-3 flex flex-0.7 w-full'>
           <div className='flex justify-center items-center flex-col border-2 border-dotted border-gray-300 p-3 w-full h-420'>
@@ -220,10 +264,10 @@ const CreatePin = ({ user }) => {
               <div className='flex justify-end items-end mt-5'>
                 <button 
                   type='button' 
-                  onClick={savePin}
+                  onClick={upload ? updatePin : savePin}
                   className='bg-red-500 text-white font-bold p-2 rounded-full outline-none'
                 >
-                  Save Pin
+                  {upload ? 'Upload' : 'Save'}
                 </button>
               </div>
             </div>

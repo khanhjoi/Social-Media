@@ -21,56 +21,72 @@ const UserProfile = () => {
   const navigate = useNavigate();
   const { userId } =useParams();
 
-  useEffect(() => {
-    let user = JSON.parse(localStorage.getItem('user'));
-
-    if(!user) {
-      user = {
-        username: 'Guest',
-        image: 'https://res.cloudinary.com/dxkokmfiu/image/upload/v1691221086/Sosial%20Media/wkxjlekeuq2y2cvejvtr.jpg',
-        email: 'guest@example.com',
-      }
+  const checkGoogleUser = () => {
+    const UserGoogle = userId.includes('@');
+    if(UserGoogle) {
+      return true;
     }
-    // check user is a guest or user in system
-    if(user.username === 'Guest') {
-      toast.warn('You must be user to use this function');
-      return navigate("/login");
+    return false;
+  }
+
+  useEffect(() => { 
+    if(checkGoogleUser()) {
+      toast.warning('User is use Google Login, pls register to use this function');
+      return navigate('/')
     }else {
-      if(user) {
-        setUser(user);
-      }else {
-        fetch(`http://localhost:7070/api/user/${userId}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json"
-          }
-        }).then(res => {
-          return res.json();
-        }).then(data => {
-          if(data.pins) {
-            setPins(data.pins)
-          }
-        })
+      let user = JSON.parse(localStorage.getItem('user'));
+
+      if(!user) {
+        user = {
+          username: 'Guest',
+          image: 'https://res.cloudinary.com/dxkokmfiu/image/upload/v1691221086/Sosial%20Media/wkxjlekeuq2y2cvejvtr.jpg',
+          email: 'guest@example.com',
+        }
       }
-    }  
+      // check user is a guest or user in system
+      if(user.username === 'Guest') {
+        toast.warn('You must be user to use this function');
+        return navigate("/login");
+      }else {
+        if(user) {
+          setUser(user);
+        }else {
+          fetch(`http://localhost:7070/api/user/${userId}`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json"
+            }
+          }).then(res => {
+            return res.json();
+          }).then(data => {
+            console.log(data)
+            if(data.pins) {
+              setPins(data.pins)
+            }
+          })
+        }
+      }  
+    } 
   }, [userId])
 
   
   useEffect(() => {
-    fetch(`http://localhost:7070/api/user/${activeBtn}/${userId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    }).then(res => {
-      return res.json();
-    }).then(data => {
-      if(data.pins) {
-        setPins(data.pins)
-      }else {
-        setPins(null)
-      }
-    })
+      if(!checkGoogleUser()) {
+        fetch(`http://localhost:7070/api/user/${activeBtn}/${userId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }).then(res => {
+        return res.json();
+      }).then(data => {
+        if(data.pins) {
+          setPins(data.pins)
+        }else {
+          setPins(null)
+        }
+      })
+    }
   },[text]);
 
   if(!user) {
