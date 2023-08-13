@@ -23,26 +23,6 @@ const router = createBrowserRouter([
   {
     path: "/*",
     element: <App/>,
-    children: [
-      {
-        path: "pin-detail/:id",
-      },
-      {
-        path: "user-profile/:id",
-      }
-      ,
-      {
-        path: "category/:categoryId",
-      }
-      ,
-      {
-        path: "create-pin",
-      }
-      ,
-      {
-        path: "search",
-      }
-    ]
   },
   {
     path: "/login",
@@ -51,11 +31,7 @@ const router = createBrowserRouter([
   {
     path: "/register",
     element: <Register />,
-  },
-  {
-    path: "/*/",
-    element:  <ErrorPage/>
-  },
+  }
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(

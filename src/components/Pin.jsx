@@ -9,8 +9,6 @@ import { BsFillArrowUpRightCircleFill } from 'react-icons/bs';
 import { toast } from 'react-toastify';
 
 
-
-
 const Pin = ({ pin }) => {
   const [postHovered, setPostHovered] = useState(false);
   const [savingPin, setSavingPin] = useState([]);
@@ -29,6 +27,11 @@ const Pin = ({ pin }) => {
         image: 'https://res.cloudinary.com/dxkokmfiu/image/upload/v1691221086/Sosial%20Media/wkxjlekeuq2y2cvejvtr.jpg',
         email: 'guest@example.com',
       }
+    }
+    
+    if(!user?.Save) {
+      toast.warning('Register to use this function!!');
+      return;
     }
 
     // check user is a guest or user in system
@@ -123,7 +126,7 @@ const Pin = ({ pin }) => {
           <div className='flex justify-between items-center gap-2 w-full'>
             {pin?.destination && (
               <a
-                href={pin.destination}
+                href={pin?.image?.url}
                 target="_blank"
                 rel="noreferrer"
                 className='bg-white flex items-center gap-2 text-black font-bold p-2 pl-4 pr-4 rounded-full truncate opacity-70 hover:opacity-100 hover:shadow-md'

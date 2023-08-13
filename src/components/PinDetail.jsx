@@ -118,14 +118,13 @@ const PinDetail = ({ user }) => {
 
   if(!pinDetail) return <Spinner message="Loading Pin" />
 
-  return (
-    
+  return ( 
   <>
     <div className='flex xl-flex-row flex-col m-auto bg-white' style={{ maxWidth: '1500px', borderRadius: '32px'}}>
       <div className='flex justify-center items-center md:items-start flex-initial'>
         <img 
           src={pinDetail?.image ? pinDetail?.image.url : pinDetail?.picture }
-          className='rounded-t-3xl rounded-b-lg'
+          className='rounded-t-3xl rounded-b-lg w-6/12'
           alt="user-post"
         />
       </div>
@@ -133,20 +132,20 @@ const PinDetail = ({ user }) => {
         <div className='flex items-center justify-between'>
           <div className='flex gap-2 items-center'>
           {!menu ? (
-            <a
+            <div
               onClick={handleMenuToggle}
               className='bg-white w-9 h-9 rounded-full flex items-center justify-center text-dark text-xl opacity-75 hover:opacity-100'
             >
                 <BiDotsVertical />
-            </a>
+            </div>
           ): (
             <>
-              <a
+              <div
                 onClick={handleMenuToggle}
                 className='bg-white w-9 h-9 rounded-full flex items-center justify-center text-dark text-xl opacity-75 hover:opacity-100'
               >
                   <AiOutlineClose />
-              </a>
+              </div>
               <div className='flex ml-20  rounded-lg shadow-2xl border border-slate-600'> 
                 <a 
                     href={`${pinDetail?.image ? pinDetail?.image.url : pinDetail?.picture }`}

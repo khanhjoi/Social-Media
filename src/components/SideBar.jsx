@@ -24,7 +24,7 @@ const SideBar = ({user, closeToggle}) => {
 
   const loutOUt = () => {
     localStorage.clear();
-    return navigate("/login")
+    return navigate("/login");
   }
 
   const handleCloseSidebar = () => {

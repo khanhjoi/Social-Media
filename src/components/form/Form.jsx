@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 // import Components
 import Input from '../form/Input'
 
+
 const Form = ({ title, onSubmit, method }) => {
 
   const navigate = useNavigate();

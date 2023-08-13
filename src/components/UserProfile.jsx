@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom';
 
 import { AiOutlineLogout } from 'react-icons/ai';
-import { googleLogout  } from '@react-oauth/google';
 import { toast } from 'react-toastify';
 
 import MasonryLayout from './MasonryLayout';
@@ -17,9 +16,9 @@ const UserProfile = () => {
   const [pins, setPins] = useState(null);
   const [text, setText] = useState('created');
   const [activeBtn, setActiveBtn] = useState('created');
-
-  const navigate = useNavigate();
   const { userId } =useParams();
+  
+  const navigate = useNavigate();
 
   const checkGoogleUser = () => {
     const UserGoogle = userId.includes('@');
@@ -29,10 +28,15 @@ const UserProfile = () => {
     return false;
   }
 
+  const logout = () => {
+    localStorage.clear();
+    return navigate("/login");
+  }
+
   useEffect(() => { 
     if(checkGoogleUser()) {
       toast.warning('User is use Google Login, pls register to use this function');
-      return navigate('/')
+      return navigate('/');
     }else {
       let user = JSON.parse(localStorage.getItem('user'));
 
@@ -67,7 +71,7 @@ const UserProfile = () => {
         }
       }  
     } 
-  }, [userId])
+  }, [userId,])
 
   
   useEffect(() => {
@@ -118,7 +122,7 @@ const UserProfile = () => {
               <button
                 type='button'
                 className='bg-white p-2 rounded-full cursor-pointer outline-none shadow-md'
-                onClick={googleLogout()}
+                onClick={logout}
               >
                 <AiOutlineLogout />
               </button>
@@ -147,10 +151,19 @@ const UserProfile = () => {
             >
               Saved
             </button>
+            <button
+              type='button'
+              onClick={(e) => {
+                setText(e.target.textContent);
+                setActiveBtn('edit');
+              }}
+              className={`${activeBtn === 'edit' ?  activeBtnStyles : notActiveBtnStyles }`}
+            >
+              Edit
+            </button>
           </div>
-          
           {/* save and created */}
-          {pins?.length ? (
+          {pins?.length && activeBtn !== 'edit'? (
             <div className='px-2'>
               <MasonryLayout pins={pins}/>
             </div>
