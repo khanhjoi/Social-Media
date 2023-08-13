@@ -50,8 +50,6 @@ export const updatePin = async (req: express.Request, res: express.Response) => 
     if(!title || !category) {
       return res.status(400).json({ message: "lack of title or category"});
     }
-    console.log(id)
-    
 
     const pin = await uploadPinModel(id ,{
       title,
